@@ -1,4 +1,4 @@
-(define (script-fu-export-layers inImage inDrawable inOutputFolder inFileType)
+(define (script-fu-export-layers inImage inDrawable inOutputFolder inFileType inRemLayerExt)
     ;(gimp-message "Hello world")
     (let* (
             (theLayers (cadr (gimp-image-get-layers inImage)))
@@ -10,6 +10,9 @@
             (theLayerID 0)
             (theParasite (list))
             (theLayerName "")
+            (theLSLength 0)
+            (theLSIndex 0)
+            (theLSSTS 1)
             (theFileTypes #(".jpg" ".png"))
             (theChosenFileType (vector-ref theFileTypes inFileType))
             (theExportFile "")
@@ -39,6 +42,52 @@
             ;call function export-image-from-layer
             (set! theLayerID (vector-ref  theLayers theCurrentLayer))
             (set! theLayerName (car (gimp-item-get-name theLayerID)))
+            ;remove or keep extension from layername
+            (if (= TRUE inRemLayerExt)
+                (begin
+                  ;get the string length
+                  (set! theLSLength (string-length theLayerName))
+                  (set! theLSIndex (- theLSLength 1))
+                  (set! theLSSTS 1)
+                  ;search for a dot from last index to 0
+                  (while (= 1 theLSSTS)
+                    (if (string=? (string (string-ref theLayerName theLSIndex)) ".")
+                      (begin
+                        (if (= theLSIndex 0)
+                          (begin
+                            ;replace the dot (.) by underscore (_)
+                            (if (> theLSLength 1)
+                              (begin
+                                (set! theLayerName (substring theLayerName 1 theLSLength))
+                                (set! theLayerName (string-append "_" theLayerName))
+                              )
+                              (set! theLayerName "_")
+                            )
+                          )
+                        )
+                        (set! theLSSTS 0)
+                      )
+                      (begin
+                        (if (> theLSIndex 0) 
+                          (set! theLSIndex (- theLSIndex 1))
+                          0
+                        )
+                      )
+                    )
+                    (if (= theLSIndex 0)
+                      (set! theLSSTS 0)
+                      0
+                    )
+                  )
+                  ;(set! theLSLength (+ theLSIndex 1))
+                  ;if index = 0 do nothing
+                  ;else trim the string from right to the index we got
+                  (if (= theLSIndex 0)
+                    0
+                    (set! theLayerName (substring theLayerName 0 theLSIndex))
+                  ) 
+                )
+            )
             (set! theExportFile (string-append inOutputFolder "/" theLayerName theChosenFileType))
             (set! theLayerHeight (car (gimp-drawable-height theLayerID)))
             (set! theLayerWidth (car (gimp-drawable-width theLayerID)))
@@ -116,9 +165,11 @@
     2021, the Gienie Group"                                 ;copyright notice
     "May 16, 2021"                                          ;date created
     "RGB* INDEXED* GRAY*"                                   ;image type that the script works on
-    SF-IMAGE       "Image"                    0
-    SF-DRAWABLE    "Drawable"                 0
-    SF-DIRNAME     "Output Folder"            ""
-    SF-OPTION      "File Type (Extension)"    '("jpg" "png")
+    SF-IMAGE       "Image"                        0
+    SF-DRAWABLE    "Drawable"                     0
+    SF-DIRNAME     "Output Folder"                ""
+    SF-OPTION      "File Type (Extension)"        '("jpg" "png")
+    SF-TOGGLE      "Remove extension from layer name; Note: avoid using dots (.) in layer name"
+                                                  TRUE
 )
 (script-fu-menu-register "script-fu-export-layers" "<Image>/File/Export")
