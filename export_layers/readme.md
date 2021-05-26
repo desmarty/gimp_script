@@ -4,3 +4,4 @@
     <br>iii. You can find the Export Layers option in file menu
     <br>iv. Rest part can be done by any normal human being :)
     <br>v. The names of exported files will be same as that of the layers
+    <br><u><b>Note:</b></u> dot (.) as a layer name should be avoided.
