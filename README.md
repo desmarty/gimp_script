@@ -6,3 +6,4 @@ Essential scripts for gimp (.scm scripts)
 1. <b>Export Layers</b> - This is a script to export each layer to file as .jpg or .png format
 
 N.b: Feel free to add an issue if you find something unusual or something bad or something not friendly. I am here to help. :)
+(If i am really helpful to someone, a follow to my Github profile might help me in some way. Developers are welcome to join me)
